@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="so">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Library Admin Dashboard</title>
+<style>
+  :root { 
+    --bg: #f4f6f8; 
+    --sidebar: #111827; 
+    --accent: #2563eb; 
+    --accent-hover: #1d4ed8;
+    --danger: #dc2626;
+    --danger-hover: #b91c1c;
+    --muted: #6b7280; 
+    --card: #ffffff; 
+    --border: #e5e7eb;
+  }
+  
+  * { 
+    box-sizing: border-box; 
+    margin: 0; 
+    padding: 0; 
+  }
+  
+  body { 
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    display: flex; 
+    flex-direction: column; 
+    min-height: 100vh; 
+    background: var(--bg); 
+    color: #1f2937;
+    line-height: 1.6;
+  }
+  
+  header { 
+    height: 64px; 
+    background: var(--card); 
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between; 
+    padding: 0 24px; 
+    border-bottom: 1px solid var(--border); 
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  }
+  
+  header h1 { 
+    font-size: 20px; 
+    color: var(--accent); 
+    display: flex; 
+    align-items: center; 
+    gap: 10px; 
+    font-weight: 700;
+  }
+  
+  header .right { 
+    display: flex; 
+    gap: 12px; 
+    align-items: center; 
+  }
+  
+  .app { 
+    display: flex; 
+    flex: 1; 
+    min-height: 0; 
+  }
+  
+  .sidebar { 
+    width: 240px; 
+    background: var(--sidebar); 
+    color: white; 
+    display: flex; 
+    flex-direction: column; 
+    padding: 20px 12px; 
+    gap: 8px; 
+  }
+  
+  .brand { 
+    font-weight: 700; 
+    font-size: 16px; 
+    margin-bottom: 12px;
+    padding: 0 12px;
+  }
+  
+  .nav-btn { 
+    background: transparent; 
+    color: #d1d5db; 
+    border: none; 
+    width: 100%; 
+    text-align: left; 
+    padding: 10px 12px; 
+    border-radius: 8px; 
+    cursor: pointer; 
+    display: flex; 
+    gap: 10px; 
+    align-items: center;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+  
+  .nav-btn:hover { 
+    background: rgba(255, 255, 255, 0.05); 
+    color: #ffffff;
+  }
+  
+  .nav-btn.active { 
+    background: var(--accent);
+    color: #ffffff; 
+    font-weight: 600;
+  }
+  
+  main { 
+    flex: 1; 
+    padding: 24px 32px; 
+    overflow: auto; 
+    min-width: 0; 
+  }
+  
+  .card { 
+    background: var(--card); 
+    padding: 20px 24px; 
+    border-radius: 12px; 
+    border: 1px solid var(--border);
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    margin-bottom: 20px; 
+  }
+
+  .table-wrapper {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--card);
+  }
+  
+  table { 
+    width: 100%; 
+    border-collapse: collapse; 
+    border-spacing: 0;
+  }
+  
+  th, td { 
+    padding: 12px 16px; 
+    border-bottom: 1px solid var(--border); 
+    font-size: 14px; 
+    color: #111827;
+    text-align: left;
+    white-space: nowrap;
+  }
+  
+  td:nth-child(3), /* Description column */
+  td:nth-child(4) { /* Message column */
+    white-space: normal;
+    min-width: 200px;
+  }
+  
+  tbody tr:last-child th,
+  tbody tr:last-child td {
+    border-bottom: 0;
+  }
+
+  tbody tr:hover {
+    background: #f9fafb;
+  }
+  
+  thead th { 
+    background: #f9fafb; 
+    font-weight: 600; 
+    color: #374151; 
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  .btn { 
+    padding: 8px 14px; 
+    border-radius: 8px; 
+    border: none; 
+    cursor: pointer; 
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.2s ease-in-out;
+  }
+  
+  .btn-primary { 
+    background: var(--accent); 
+    color: white; 
+    border: 1px solid var(--accent);
+  }
+  .btn-primary:hover {
+    background: var(--accent-hover);
+    border-color: var(--accent-hover);
+  }
+  
+  .btn-ghost { 
+    background: transparent; 
+    border: 1px solid var(--border); 
+    color: #111827; 
+  }
+  .btn-ghost:hover {
+    background: #f9fafb;
+    border-color: #d1d5db;
+  }
+  
+  .btn-danger { 
+    background: var(--danger); 
+    color: white; 
+    border: 1px solid var(--danger);
+  }
+  .btn-danger:hover {
+    background: var(--danger-hover);
+    border-color: var(--danger-hover);
+  }
+  
+  .modal-backdrop { 
+    position: fixed; 
+    inset: 0; 
+    background: rgba(0, 0, 0, 0.5); 
+    display: none; 
+    align-items: center; 
+    justify-content: center; 
+    z-index: 60;
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+  }
+  
+  .modal { 
+    background: white; 
+    width: 640px; 
+    max-width: 95%; 
+    border-radius: 12px; 
+    padding: 24px; 
+    box-shadow: 0 10px 30px rgba(2, 6, 23, 0.2); 
+    animation: modal-fade-in 0.2s ease-out;
+  }
+
+  @keyframes modal-fade-in {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .modal h3 { 
+    margin-top: 0;
+    margin-bottom: 16px;
+    font-size: 20px;
+  }
+  
+  .flex { 
+    display: flex; 
+    gap: 12px; 
+    align-items: center; 
+  }
+  
+  .right { 
+    margin-left: auto; 
+  }
+  
+  .input, textarea, select { 
+    width: 100%; 
+    padding: 10px 12px; 
+    border: 1px solid var(--border); 
+    border-radius: 8px; 
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.2s ease;
+  }
+  .input:focus, textarea:focus, select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    outline: none;
+  }
+
+  textarea {
+    min-height: 80px;
+    resize: vertical;
+  }
+  
+  .form-group {
+    margin-top: 12px;
+  }
+  .form-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+  
+  .small { 
+    font-size: 13px; 
+    color: var(--muted); 
+  }
+  
+  .muted { 
+    color: var(--muted); 
+    font-size: 14px; 
+  }
+  
+  .stats-container { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); 
+    gap: 20px; 
+    margin-bottom: 25px; 
+  }
+  
+  .stat-card { 
+    background: var(--card); 
+    border-radius: 12px; 
+    padding: 20px; 
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border);
+    display: flex; 
+    align-items: center; 
+    gap: 16px;
+  }
+  
+  .stat-card i { 
+    font-size: 24px; 
+    padding: 14px; 
+    border-radius: 50%; 
+    color: white; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    height: 52px;
+  }
+  
+  .stat-card.books i { background: #3b82f6; }
+  .stat-card.users i { background: #10b981; }
+  .stat-card.downloads i { background: #f59e0b; }
+  .stat-card.reads i { background: #592599; }
+  
+  .label { 
+    font-size: 13px; 
+    color: var(--muted);
+    font-weight: 500;
+    text-transform: uppercase;
+  }
+  
+  .value { 
+    font-size: 26px; 
+    font-weight: 700; 
+    color: #111827; 
+  }
+  
+  .chart-card { 
+    background: var(--card); 
+    border-radius: 12px; 
+    padding: 20px; 
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border);
+    margin-bottom: 16px; 
+  }
+  
+  @media(max-width: 880px) {
+    .sidebar { display: none; }
+    main { padding: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>📚 Library Admin</h1>
+  <div class="right">
+    <div id="adminName" class="small muted">Admin</div>
+    <button class="btn btn-ghost" onclick="logout()">Logout</button>
+  </div>
+</header>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">Admin Panel</div>
+    <button class="nav-btn active" data-page="dashboard" onclick="navClick(event)">🏠 Dashboard</button>
+    <button class="nav-btn" data-page="books" onclick="navClick(event)">📘 Books CRUD</button>
+    <button class="nav-btn" data-page="users" onclick="navClick(event)">👥 Users</button>
+    <button class="nav-btn" data-page="reads" onclick="navClick(event)">📖 Reads</button>
+    <button class="nav-btn" data-page="downloads" onclick="navClick(event)">⬇️ Downloads</button>
+    <button class="nav-btn" data-page="reports" onclick="navClick(event)">📊 Reports</button>
+    <button class="nav-btn" data-page="messages" onclick="navClick(event)">💬 Messages</button>
+    <div style="flex:1"></div>
+    <div class="small muted" style="padding: 0 12px;">Version 1.0</div>
+  </aside>
+
+  <main>
+    <div id="page-dashboard" class="page">
+      <div class="card">
+        <h2>Welcome, Admin</h2>
+        <p class="muted">Maamul buugaagta, isticmaalayaasha, iyo tirakoobyada.</p>
+      </div>
+      <div class="stats-container">
+        <div class="stat-card books">
+          <i class="fas fa-book"></i>
+          <div>
+            <div class="label">Total Books</div>
+            <div id="statBooks" class="value">0</div>
+          </div>
+        </div>
+        <div class="stat-card users">
+          <i class="fas fa-users"></i>
+          <div>
+            <div class="label">Total Users</div>
+            <div id="statUsers" class="value">0</div>
+          </div>
+        </div>
+        <div class="stat-card downloads">
+          <i class="fas fa-download"></i>
+          <div>
+            <div class="label">Total Downloads</div>
+            <div id="statDownloads" class="value">0</div>
+          </div>
+        </div>
+        <div class="stat-card reads">
+          <i class="fas fa-book-reader"></i>
+          <div>
+            <div class="label">Total Reads</div>
+            <div id="statReads" class="value">0</div>
+          </div>
+        </div>
+      </div>
+      <div class="chart-card">
+        <canvas id="statsChart" height="120"></canvas>
+      </div>
+    </div>
+
+    <div id="page-books" class="page" style="display:none">
+      <div class="card flex">
+        <h2>📘 Books</h2>
+        <button class="btn btn-primary right" onclick="openBookModal()">+ Add Book</button>
+      </div>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Title</th>
+              <th>Author</th>
+              <th>Description</th>
+              <th style="text-align: right;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="booksTbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="page-users" class="page" style="display:none">
+      <div class="card">
+        <h2>👥 Users</h2>
+      </div>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th style="text-align: right;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="usersTbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="page-reads" class="page" style="display:none">
+      <div class="card">
+        <h2>📖 Reads</h2>
+      </div>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>User</th>
+              <th>Book</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody id="readsTbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="page-downloads" class="page" style="display:none">
+      <div class="card">
+        <h2>⬇️ Downloads</h2>
+      </div>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>User</th>
+              <th>Book</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody id="downloadsTbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="page-messages" class="page" style="display:none">
+      <div class="card">
+        <h2>💬 Messages</h2>
+      </div>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Message</th>
+              <th>Reply</th>
+              <th style="text-align: right;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="messagesTbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="page-reports" class="page" style="display:none">
+      <div class="card">
+        <h3>📄 Generate Book Report</h3>
+        <div class="flex" style="margin-top:10px">
+          <input type="number" id="reportBookId" class="input" placeholder="Enter Book ID..." />
+          <button class="btn btn-primary" onclick="generateReport()">Generate</button>
+          <button class="btn btn-ghost" onclick="window.print()">🖨️ Print</button>
+        </div>
+        <div id="reportResult" style="margin-top:20px; border-top: 1px solid var(--border); padding-top: 20px;"></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal">
+    <h3 id="modalTitle">Add Book</h3>
+    <form id="bookForm" enctype="multipart/form-data">
+      <div class="form-group">
+        <label for="bookTitle">Book Title</label>
+        <input type="text" id="bookTitle" name="title" class="input" placeholder="Book Title" required />
+      </div>
+      <div class="form-group">
+        <label for="bookAuthor">Author</label>
+        <input type="text" id="bookAuthor" name="author" class="input" placeholder="Author" required />
+      </div>
+      <div class="form-group">
+        <label for="bookDesc">Description</label>
+        <textarea id="bookDesc" name="description" class="input" placeholder="Description"></textarea>
+      </div>
+      <div class="form-group">
+        <label for="bookFile">Upload PDF:</label>
+        <input type="file" id="bookFile" name="file" class="input" accept=".pdf" />
+      </div>
+      <div class="form-group">
+        <label for="bookImage">Upload Image:</label>
+        <input type="file" id="bookImage" name="image" class="input" accept="image/*" />
+      </div>
+      <div class="flex" style="margin-top:20px">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="button" class="btn btn-ghost right" onclick="closeModal()">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="userModalBackdrop" style="display:none">
+  <div class="modal" style="width:480px">
+    <h3 id="userModalTitle">Edit User</h3>
+    <form id="userForm">
+      <div class="form-group">
+        <label for="userName">Name:</label>
+        <input type="text" id="userName" name="name" class="input" required />
+      </div>
+      <div class="form-group">
+        <label for="userEmail">Email:</label>
+        <input type="email" id="userEmail" name="email" class="input" required />
+      </div>
+      <div class="form-group">
+        <label for="userRole">Role:</label>
+        <select id="userRole" name="role" class="input">
+          <option value="user">User</option>
+          <option value="admin">Admin</option>
+        </select>
+      </div>
+      <div class="flex" style="margin-top:20px">
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <button type="button" class="btn btn-ghost right" onclick="closeUserModal()">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+<script>
+// =================================================================
+// JAVASCRIPT LOGIC (Unchanged, as requested)
+// =================================================================
+
+const apiBase = 'http://localhost:3000/api';
+let editBookId = null;
+let editUserId = null;
+let statsChart;
+
+function navClick(e){
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  e.currentTarget.classList.add('active');
+  document.querySelectorAll('.page').forEach(p => p.style.display='none');
+  const page = e.currentTarget.dataset.page;
+  document.getElementById('page-'+page).style.display='block';
+  
+  // Refresh data on page view
+  if(page === 'dashboard') fetchStats();
+  if(page === 'books') fetchBooks();
+  if(page === 'users') fetchUsers();
+  if(page === 'reads') fetchReads();
+  if(page === 'downloads') fetchDownloads();
+  if(page === 'messages') fetchMessages();
+}
+
+function logout() {
+  localStorage.removeItem('token');
+  window.location.href = './index.html'; // Redirect to login/index page
+}
+
+function openBookModal(book = null){
+  document.getElementById('modalBackdrop').style.display='flex';
+  document.getElementById('bookForm').reset();
+  editBookId = null;
+  document.getElementById('modalTitle').textContent = book ? 'Edit Book' : 'Add Book';
+  if(book){ 
+    editBookId = book.id; 
+    document.getElementById('bookTitle').value = book.title; 
+    document.getElementById('bookAuthor').value = book.author; 
+    document.getElementById('bookDesc').value = book.description; 
+  }
+}
+function closeModal(){ document.getElementById('modalBackdrop').style.display = 'none'; }
+
+document.getElementById('bookForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const token = localStorage.getItem('token');
+  const formData = new FormData(e.target);
+  const method = editBookId ? 'PUT' : 'POST';
+  const url = `${apiBase}/books${editBookId ? '/' + editBookId : ''}`;
+  
+  try {
+    const res = await fetch(url, {
+      method,
+      headers: { Authorization: `Bearer ${token}` },
+      body: formData
+    });
+    if (!res.ok) throw new Error('Failed to save book');
+    closeModal(); 
+    fetchBooks();
+  } catch (err) {
+    console.error(err);
+    alert('Error saving book: ' + err.message);
+  }
+});
+
+// User form submit
+document.getElementById('userForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  if(!editUserId) return;
+  const token = localStorage.getItem('token');
+  const formData = new FormData(e.target);
+  const data = Object.fromEntries(formData.entries()); // {name, email, role}
+  const url = `${apiBase}/auth/${editUserId}`;
+  
+  try {
+    const res = await fetch(url, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) throw new Error('Failed to update user');
+    closeUserModal();
+    fetchUsers();
+  } catch (err) {
+    console.error(err);
+    alert('Error updating user: ' + err.message);
+  }
+});
+
+
+async function fetchBooks(){
+  const token = localStorage.getItem('token');
+  const res = await fetch(`${apiBase}/books`, { headers: { Authorization: `Bearer ${token}` } });
+  const data = await res.json();
+  const tbody = document.getElementById('booksTbody');
+  tbody.innerHTML = '';
+  data.forEach(b => {
+    // Sanitize string for onclick attribute
+    const bookJson = JSON.stringify(b).replace(/"/g, '&quot;');
+    tbody.innerHTML += `
+      <tr>
+        <td>${b.id}</td>
+        <td>${b.title}</td>
+        <td>${b.author}</td>
+        <td>${(b.description || '').substring(0, 50)}${b.description && b.description.length > 50 ? '...' : ''}</td>
+        <td style="text-align: right; white-space: nowrap;">
+          <button class='btn btn-ghost' onclick='openBookModal(${bookJson})'>Edit</button> 
+          <button class='btn btn-danger' onclick='deleteBook(${b.id})'>Delete</button>
+        </td>
+      </tr>`; 
+  });
+}
+async function deleteBook(id){ 
+  if(confirm('Delete this book?')){ 
+    const token = localStorage.getItem('token'); 
+    await fetch(`${apiBase}/books/${id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } }); 
+    fetchBooks(); 
+  } 
+}
+
+// Users
+async function fetchUsers(){ 
+  const token = localStorage.getItem('token'); 
+  const res = await fetch(`${apiBase}/auth/`, { headers: { Authorization: `Bearer ${token}` } }); 
+  const data = await res.json(); 
+  const tbody = document.getElementById('usersTbody'); 
+  tbody.innerHTML = ''; 
+  data.forEach((u, i) => { 
+    const userJson = JSON.stringify(u).replace(/"/g, '&quot;'); 
+    tbody.innerHTML += `
+      <tr>
+        <td>${i + 1}</td>
+        <td>${u.name}</td>
+        <td>${u.email}</td>
+        <td>${u.role}</td>
+        <td style="text-align: right; white-space: nowrap;">
+          <button class='btn btn-ghost' onclick='openUserModal(${userJson})'>Edit</button> 
+          <button class='btn btn-danger' onclick='deleteUser(${u.id})'>Delete</button>
+        </td>
+      </tr>`;
+  });
+}
+async function deleteUser(id){ 
+  if(confirm('Are you sure you want to delete this user?')){ 
+    const token = localStorage.getItem('token'); 
+    await fetch(`${apiBase}/auth/${id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } }); 
+    fetchUsers(); 
+  } 
+}
+function openUserModal(user){ 
+  document.getElementById('userModalBackdrop').style.display = 'flex'; 
+  document.getElementById('userForm').reset(); 
+  editUserId = user.id; 
+  document.getElementById('userName').value = user.name; 
+  document.getElementById('userEmail').value = user.email; 
+  document.getElementById('userRole').value = user.role; 
+}
+function closeUserModal(){ 
+  document.getElementById('userModalBackdrop').style.display = 'none'; 
+  editUserId = null; 
+}
+
+
+// Reads
+async function fetchReads(){ 
+  const token = localStorage.getItem('token'); 
+  try { 
+    const res = await fetch(`${apiBase}/reads/`, { headers: { Authorization: `Bearer ${token}` } }); 
+    const data = await res.json(); 
+    const tbody = document.getElementById('readsTbody'); 
+    tbody.innerHTML = ''; 
+    data.forEach((r, i) => {
+      tbody.innerHTML += `
+        <tr>
+          <td>${i + 1}</td>
+          <td>${r.user_id || '-'} ${r.user_name ? `(${r.user_name})` : ''}</td>
+          <td>${r.book_id || '-'} ${r.book_title ? `(${r.book_title})` : ''}</td>
+          <td>${r.read_date ? new Date(r.read_date).toLocaleString() : '-'}</td>
+        </tr>`;
+    });
+  } catch(err) {
+    document.getElementById('readsTbody').innerHTML = '<tr><td colspan="4" class="muted" style="text-align: center;">No reads or failed to fetch reads.</td></tr>'; 
+  }
+}
+
+// Downloads
+async function fetchDownloads(){ 
+  const token = localStorage.getItem('token'); 
+  try { 
+    const res = await fetch(`${apiBase}/downloads/`, { headers: { Authorization: `Bearer ${token}` } }); 
+    const data = await res.json(); 
+    const tbody = document.getElementById('downloadsTbody'); 
+    tbody.innerHTML = ''; 
+    data.forEach((d, i) => {
+      tbody.innerHTML += `
+        <tr>
+          <td>${i + 1}</td>
+          <td>${d.user_id || '-'} ${d.user_name ? `(${d.user_name})` : ''}</td>
+          <td>${d.book_id || '-'} ${d.book_title ? `(${d.book_title})` : ''}</td>
+          <td>${d.download_date ? new Date(d.download_date).toLocaleString() : '-'}</td>
+        </tr>`;
+    });
+  } catch(err) {
+    document.getElementById('downloadsTbody').innerHTML = '<tr><td colspan="4" class="muted" style="text-align: center;">No downloads or failed to fetch downloads.</td></tr>'; 
+  }
+}
+
+// Stats
+async function fetchStats(){
+  try {
+    const token = localStorage.getItem("token");
+    const res = await fetch(`${apiBase}/totals`, { headers: token ? { Authorization: `Bearer ${token}` } : {} });
+    const data = await res.json();
+    document.getElementById("statBooks").textContent = data.total_books ?? 0;
+    document.getElementById("statUsers").textContent = data.total_users ?? 0;
+    document.getElementById("statDownloads").textContent = data.total_downloads ?? 0;
+    document.getElementById("statReads").textContent = data.total_reads ?? 0;
+    updateStatsChart(data);
+  } catch(err) { 
+    console.error(err); 
+    document.getElementById("statBooks").textContent = 0; 
+    document.getElementById("statUsers").textContent = 0; 
+    document.getElementById("statDownloads").textContent = 0; 
+    document.getElementById("statReads").textContent = 0;
+  }
+}
+function updateStatsChart(data){
+  const ctx = document.getElementById("statsChart").getContext("2d");
+  const chartData = [data.total_books ?? 0, data.total_users ?? 0, data.total_downloads ?? 0, data.total_reads ?? 0];
+  if(statsChart) statsChart.destroy();
+  statsChart = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: ["Books", "Users", "Downloads", "Reads"],
+      datasets: [{
+        label: "Totals Overview",
+        data: chartData,
+        backgroundColor: ["#3b82f6", "#10b981", "#f59e0b", "#592599"],
+        borderRadius: 6
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false }
+      },
+      scales: {
+        y: { beginAtZero: true, grid: { color: "#f3f4f6" } },
+        x: { grid: { display: false } }
+      }
+    }
+  });
+}
+
+// Messages
+async function fetchMessages(){ 
+  const token = localStorage.getItem('token'); 
+  const res = await fetch(`${apiBase}/messages`, { headers: { Authorization: `Bearer ${token}` } }); 
+  const data = await res.json(); 
+  const tbody = document.getElementById('messagesTbody'); 
+  tbody.innerHTML = ''; 
+  data.forEach((m, i) => {
+    tbody.innerHTML += `
+      <tr>
+        <td>${i + 1}</td>
+        <td>${m.name}</td>
+        <td>${m.email}</td>
+        <td>${m.message}</td>
+        <td>${m.reply || '<span class="muted">No reply</span>'}</td>
+        <td style="text-align: right; white-space: nowrap;">
+          <button class="btn btn-primary" onclick="replyMessage(${m.id})">Reply</button>
+          <button class="btn btn-ghost" onclick="editReply(${m.id}, '${m.reply || ''}')">Edit</button>
+          <button class="btn btn-danger" onclick="deleteMessage(${m.id})">Delete</button>
+        </td>
+      </tr>`;
+  });
+}
+
+async function replyMessage(id){ 
+  const reply = prompt('Write your reply:'); 
+  if(!reply) return; 
+  const token = localStorage.getItem('token'); 
+  await fetch(`${apiBase}/messages/${id}/reply`, { 
+    method: 'PUT', 
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, 
+    body: JSON.stringify({ reply }) 
+  }); 
+  fetchMessages();
+}
+async function editReply(id, current){ 
+  const newReply = prompt('Edit reply:', current || ''); 
+  if(newReply === null) return; // Allow empty string, but not cancel
+  const token = localStorage.getItem('token'); 
+  await fetch(`${apiBase}/messages/${id}/reply`, { 
+    method: 'PUT', 
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, 
+    body: JSON.stringify({ reply: newReply }) 
+  }); 
+  fetchMessages();
+}
+async function deleteMessage(id){ 
+  if(!confirm('Delete this message?')) return; 
+  const token = localStorage.getItem('token'); 
+  await fetch(`${apiBase}/messages/${id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } }); 
+  fetchMessages();
+}
+
+// Report
+async function generateReport(){
+  const id = document.getElementById('reportBookId').value;
+  const token = localStorage.getItem('token');
+  if(!id) return alert('Fadlan geli Book ID.');
+  
+  try {
+    const res = await fetch(`${apiBase}/books/report/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+    if(!res.ok) throw new Error('Book not found or error occurred');
+    const data = await res.json();
+    const resultDiv = document.getElementById('reportResult');
+    
+    // Function to build table rows
+    const buildRows = (items, dateField) => {
+      if (!items || items.length === 0) {
+        return '<tr><td colspan="3" class="muted" style="text-align: center;">No data available.</td></tr>';
+      }
+      return items.map((r, i) => `
+        <tr>
+          <td>${i + 1}</td>
+          <td>${r.name || 'Unknown User'}</td>
+          <td>${new Date(r[dateField]).toLocaleString()}</td>
+        </tr>
+      `).join('');
+    };
+
+    resultDiv.innerHTML = `
+      <h4>Report for: <b>${data.book.title}</b> by ${data.book.author}</h4>
+      <p style="margin-top: 10px;"><b>Total Reads:</b> ${data.totalReads}</p>
+      <p><b>Total Downloads:</b> ${data.totalDownloads}</p>
+      
+      <h5 style="margin-top:15px; margin-bottom: 5px;">📖 Reads:</h5>
+      <div class="table-wrapper">
+        <table>
+          <thead><tr><th>#</th><th>User</th><th>Date</th></tr></thead>
+          <tbody>${buildRows(data.reads, 'read_date')}</tbody>
+        </table>
+      </div>
+      
+      <h5 style="margin-top:15px; margin-bottom: 5px;">⬇️ Downloads:</h5>
+      <div class="table-wrapper">
+        <table>
+          <thead><tr><th>#</th><th>User</th><th>Date</th></tr></thead>
+          <tbody>${buildRows(data.downloads, 'download_date')}</tbody>
+        </table>
+      </div>
+    `;
+  } catch (err) {
+    console.error(err);
+    document.getElementById('reportResult').innerHTML = `<p style="color: var(--danger);">${err.message}</p>`;
+  }
+}
+
+// Initial Load
+(function init() {
+  // Check for token, if not, redirect to login
+  // if (!localStorage.getItem('token')) {
+  //   window.location.href = './index.html';
+  //   return;
+  // }
+  
+  // Set Admin name (if available, e.g., from a /me endpoint)
+  // You would fetch this after login and store it
+  
+  fetchStats(); 
+  // fetchBooks(); // No need to fetch all books on initial load, only when clicking the tab
+  setInterval(fetchStats, 30000); // Refresh stats every 30 seconds
+})();
+
+</script>
+</body>
+</html>

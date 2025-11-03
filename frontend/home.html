@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="so">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>📚 Digital Library</title>
+<style>
+:root {
+  --bg: #8f9eadb2;
+  --card: #aba6a699;
+  --accent: #2563eb;
+  --text: #111827;
+  --green: #10b981;
+}
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  scroll-behavior: smooth;
+}
+
+/* 🔹 Header + Navbar */
+header {
+  background: #fff;
+  padding: 12px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.logo {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--accent);
+}
+nav a {
+  margin: 0 12px;
+  text-decoration: none;
+  color: var(--text);
+  font-weight: 500;
+}
+nav a:hover {
+  color: var(--accent);
+}
+.logout-btn {
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 7px 13px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+/* 🔹 Banner / Xayeysiis */
+.banner {
+  background: linear-gradient(to right, #10b981, #1e40af);
+  color: white;
+  text-align: center;
+  padding: 70px 20px;
+  border-radius: 0 0 20px 20px;
+}
+.banner h2 {
+  font-size: 30px;
+  margin-bottom: 10px;
+}
+.banner p {
+  font-size: 17px;
+  opacity: 0.95;
+}
+
+/* 🔹 Search Bar */
+.search-bar {
+  margin: 30px auto;
+  max-width: 500px;
+  display: flex;
+  gap: 8px;
+}
+.search-bar input {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 15px;
+}
+.search-bar button {
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+/* 🔹 Books Section */
+.container {
+  max-width: 1100px;
+  margin: 30px auto;
+  padding: 0 16px;
+}
+h2.section-title {
+  font-size: 24px;
+  color: var(--accent);
+  margin-bottom: 15px;
+  text-align: center;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+.card {
+  background: var(--card);
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s;
+}
+.card:hover {
+  transform: translateY(-4px);
+}
+.card img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+}
+.card-body {
+  padding: 14px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.card-body h3 {
+  margin: 0 0 4px;
+  font-size: 16px;
+  color: var(--accent);
+}
+.card-body .author {
+  font-size: 13px;
+  color: #374151;
+  margin-bottom: 8px;
+}
+.card-body .desc {
+  flex: 1;
+  font-size: 13px;
+  color: #4b5563;
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+.btn-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+}
+.btn {
+  flex: 1;
+  padding: 6px 0;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  text-decoration: none;
+  text-align: center;
+  font-size: 13px;
+}
+.btn-read {
+  background: var(--accent);
+  color: white;
+}
+.btn-download {
+  background: var(--green);
+  color: white;
+}
+
+/* 🔹 About Section */
+section {
+  max-width: 900px;
+  margin: 60px auto;
+  padding: 0 16px;
+}
+#about p {
+  color: #374151;
+  line-height: 1.7;
+  font-size: 15px;
+  text-align: justify;
+}
+#about strong {
+  color: var(--accent);
+}
+
+/* 🔹 Contact Section */
+#contact {
+  background: #eef2ff;
+  border-radius: 12px;
+  padding: 40px 20px;
+}
+#contact p {
+  color: #374151;
+  text-align: center;
+  margin-bottom: 20px;
+}
+#contact form {
+  max-width: 500px;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+#contact input, #contact textarea {
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-family: inherit;
+  font-size: 14px;
+}
+#contact textarea {
+  resize: vertical;
+}
+#contact button {
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+/* 🔹 Footer */
+footer {
+  background: #111827;
+  color: #d1d5db;
+  text-align: center;
+  padding: 25px 10px;
+  margin-top: 40px;
+}
+footer a {
+  color: #60a5fa;
+  text-decoration: none;
+  margin: 0 8px;
+}
+footer a:hover {
+  text-decoration: underline;
+}
+footer small {
+  display: block;
+  margin-top: 10px;
+  color: #9ca3af;
+  font-size: 12px;
+}
+
+/* ✅ Reader Modal */
+/* .reader-modal {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.6);
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  animation: fadeIn 0.3s ease-in-out;
+} */
+
+/* .reader-content {
+  background: white;
+  width: 90%;
+  height: 90%;
+  border-radius: 10px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+} */
+
+/* ✅ Markuu buuxiyo shaashadda */
+/* .reader-content.fullscreen {
+  width: 100vw;
+  height: 100vh;
+  border-radius: 0;
+} */
+
+.reader-header {
+  background: #2563eb;
+  color: white;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.reader-header h3 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.reader-header .buttons {
+  display: flex;
+  gap: 6px;
+}
+
+.reader-header button {
+  background: rgba(255,255,255,0.2);
+  border: none;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.reader-header button:hover {
+  background: rgba(255,255,255,0.4);
+}
+
+.reader-iframe {
+  flex: 1;
+  border: none;
+  width: 100%;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.reader-modal {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  right: 0; bottom: 0;
+  background: rgba(0,0,0,0.6);
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.reader-content {
+  background: white;
+  width: 90%;
+  height: 90%;
+  border-radius: 10px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+}
+
+/* ✅ Fullscreen buuxa oo dhab ah */
+.reader-content.fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+  margin: 0;
+  padding: 0;
+  z-index: 10000;
+}
+
+
+
+
+
+
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">📚 Digital Library</div>
+  <nav>
+    <a href="#home">Home</a>
+    <a href="#about">About</a>
+    <a href="#contact">Contact</a>
+    <a href="#mymessages">My Messages</a>
+  </nav>
+  <button class="logout-btn" onclick="logout()">Logout</button>
+</header>
+
+<!-- 🔹 Banner -->
+<section class="banner" id="home">
+  <h2>Welcome to Your Digital Library</h2>
+  <p>Discover, read, and download books from a growing collection of knowledge 📖</p>
+</section>
+
+<!-- 🔹 Search Bar -->
+<div class="search-bar">
+  <input type="text" id="searchInput" placeholder="Search by title, author, or description..." oninput="filterBooks()" />
+  <button onclick="filterBooks()">Search</button>
+</div>
+
+<!-- 🔹 Books Section -->
+<div class="container">
+  <h2 class="section-title">All Books</h2>
+  <div id="booksGrid" class="grid"></div>
+</div>
+
+
+<!-- ✅ Reader Modal -->
+<div id="readerModal" class="reader-modal">
+  <div id="readerContent" class="reader-content">
+    <div class="reader-header">
+      <h3>📖 Book Reader</h3>
+      <div class="buttons">
+        <button id="toggleSizeBtn" onclick="toggleReaderSize()">🔼</button>
+        <button onclick="closeReader()">✖</button>
+      </div>
+    </div>
+    <iframe id="readerFrame" class="reader-iframe"></iframe>
+  </div>
+</div>
+
+
+<!-- 🔹 About Section -->
+<section id="about">
+  <h2 class="section-title">About Us</h2>
+  <p>
+    <strong>Digital Library</strong> waa madal casri ah oo loogu talagalay in lagu sahlo helitaanka aqoonta.
+    Ujeedadeennu waa in aan ka dhigno buugaagta iyo macluumaadka mid si fudud loogu heli karo qof walba,
+    meel kasta oo uu joogo.  
+    Waxaan diiradda saarnaa <strong>kor u qaadista dhaqanka akhriska</strong>, dhiirrigelinta barashada
+    dijitaalka ah, iyo bixinta buugaag tayo leh oo ku qoran af-Soomaali iyo afaf kale.
+  </p>
+</section>
+
+<!-- 🔹 Contact Section -->
+<section id="contact">
+  <h2 class="section-title">Contact Us</h2>
+  <p>We’d love to hear from you! Send us a quick message below 👇</p>
+  <form onsubmit="sendMessage(event)">
+    <input type="text" id="name" placeholder="Your Name" required />
+    <input type="email" id="email" placeholder="Your Email" required />
+    <textarea id="message" rows="3" placeholder="Your Message..." required></textarea>
+    <button type="submit">Send Message</button>
+  </form>
+</section>
+
+
+
+
+
+
+<section id="mymessages">
+  <h2 class="section-title">💬 My Messages</h2>
+  <p style="text-align:center;">Here you can see your sent messages and admin replies.</p>
+  <div id="userMessages" style="max-width:700px;margin:auto;padding:20px;background:#fff;border-radius:10px;box-shadow:0 2px 6px rgba(0,0,0,0.1);">
+    <p style="text-align:center;color:#555;">Loading your messages...</p>
+  </div>
+</section>
+
+
+<!-- 🔹 Footer -->
+<footer>
+  <p>
+    <a href="#home">Home</a> |
+    <a href="#about">About</a> |
+    <a href="#contact">Contact</a>
+     <a href="#mymessages">MyMessage</a>
+  </p>
+  <small>© 2025 Digital Library. All rights reserved.</small>
+</footer>
+
+<script>
+const apiBase = 'http://localhost:3000/api';
+let allBooks = [];
+
+// ✅ Fetch books
+async function fetchBooks() {
+  const token = localStorage.getItem('token');
+  const res = await fetch(`${apiBase}/books`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  const data = await res.json();
+  allBooks = data;
+  renderBooks(data);
+}
+
+// ✅ Render books
+function renderBooks(books) {
+  const grid = document.getElementById('booksGrid');
+  grid.innerHTML = '';
+
+  if (books.length === 0) {
+    grid.innerHTML = `<p style="text-align:center;color:#666;">No books found 📚</p>`;
+    return;
+  }
+
+  books.forEach(b => {
+    const imageSrc = `http://localhost:3000${b.image_url}`;
+    grid.innerHTML += `
+      <div class="card">
+        <img src="${imageSrc}" alt="${b.title}">
+        <div class="card-body"> 
+           <h3> Title: ${b.title}</h3>
+          <div class="author">👤 Author: ${b.author}</div>
+          <div class="desc"> Description: ${b.description || 'No description available.'}</div>
+          <div class="btn-row">
+            <button onclick="readBook(${b.id})" class="btn btn-read">📖 Read</button>
+            <button onclick="downloadBook(${b.id})" class="btn btn-download">⬇️ Download</button>
+          </div>
+        </div>
+      </div>`;
+  });
+}
+
+// ✅ Filter/Search books
+function filterBooks() {
+  const query = document.getElementById('searchInput').value.toLowerCase();
+  const filtered = allBooks.filter(b =>
+    b.title.toLowerCase().includes(query) ||
+    b.author.toLowerCase().includes(query) ||
+    (b.description && b.description.toLowerCase().includes(query))
+  );
+  renderBooks(filtered);
+}
+
+// ✅ Read & Download
+function readBook(id) {
+  const token = localStorage.getItem('token');
+  window.open(`http://localhost:3000/api/books/view/${id}?token=${token}`, );
+}
+function downloadBook(id) {
+  const token = localStorage.getItem('token');
+  window.open(`http://localhost:3000/api/books/download/${id}?token=${token}`, '_blank');
+}
+
+// ✅ Logout
+function logout() {
+  localStorage.removeItem('token');
+  window.location.href = './index.html';
+}
+
+// ✅ Send Message (with token)
+async function sendMessage(e) {
+  e.preventDefault();
+  const message = document.getElementById('message').value.trim();
+
+  if (!message) {
+    return alert("⚠️ Please enter a message!");
+  }
+
+  const token = localStorage.getItem('token');
+  if (!token) return alert("⚠️ Please log in first!");
+
+  const res = await fetch(`${apiBase}/messages`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify({ message })
+  });
+
+  if (res.ok) {
+    alert("✅ Message sent successfully!");
+    e.target.reset();
+    fetchUserMessages();
+  } else {
+    const err = await res.json();
+    alert(`❌ Failed to send message: ${err.message || 'Try again'}`);
+  }
+}
+
+// ✅ Fetch user messages (secured)
+async function fetchUserMessages() {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    document.getElementById('userMessages').innerHTML = `<p style="text-align:center;color:#888;">⚠️ Please log in to see your messages.</p>`;
+    return;
+  }
+
+  const res = await fetch(`${apiBase}/messages/user`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+
+  const data = await res.json();
+  const container = document.getElementById('userMessages');
+
+  if (!Array.isArray(data) || data.length === 0) {
+    container.innerHTML = `<p style="text-align:center;color:#888;">No messages yet.</p>`;
+    return;
+  }
+
+  container.innerHTML = data.map(m => `
+    <div style="border:1px solid #ddd;padding:12px;margin-bottom:10px;border-radius:8px;">
+      <p><strong>🧍 You:</strong> ${m.message}</p>
+      <p style="color:#555;font-size:13px;">Sent on: ${new Date(m.created_at).toLocaleString()}</p>
+      ${m.reply 
+        ? `<div style="margin-top:8px;padding:10px;background:#eef2ff;border-left:4px solid #2563eb;border-radius:6px;">
+             <strong>👨‍💼 Admin reply:</strong> ${m.reply}
+           </div>`
+        : `<p style="color:#999;margin-top:6px;">⏳ No reply yet</p>`}
+    </div>
+  `).join('');
+}
+
+function readBook(id) {
+  const token = localStorage.getItem('token');
+  const readerModal = document.getElementById('readerModal');
+  const readerFrame = document.getElementById('readerFrame');
+
+  // ✅ URL-ka buugga
+  const bookUrl = `http://localhost:3000/api/books/view/${id}?token=${token}`;
+  readerFrame.src = bookUrl;
+
+  // ✅ Soo bandhig modal-ka
+  readerModal.style.display = 'flex';
+}
+
+// ✅ Close modal
+function closeReader() {
+  const readerModal = document.getElementById('readerModal');
+  const readerFrame = document.getElementById('readerFrame');
+  const readerContent = document.getElementById('readerContent');
+  const toggleBtn = document.getElementById('toggleSizeBtn');
+
+  readerModal.style.display = 'none';
+  readerFrame.src = '';
+  readerContent.classList.remove('fullscreen');
+  toggleBtn.textContent = '🔼';
+}
+
+// ✅ Maximize / Minimize toggle
+function toggleReaderSize() {
+  const readerContent = document.getElementById('readerContent');
+  const toggleBtn = document.getElementById('toggleSizeBtn');
+
+  if (readerContent.classList.contains('fullscreen')) {
+    readerContent.classList.remove('fullscreen');
+    toggleBtn.textContent = '🔼'; // maximize
+  } else {
+    readerContent.classList.add('fullscreen');
+    toggleBtn.textContent = '🔽'; // minimize
+  }
+}
+
+
+
+
+// ✅ Init
+fetchBooks();
+fetchUserMessages();
+</script>
+
+
+</body>
+</html>
